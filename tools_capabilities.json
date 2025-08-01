@@ -1,0 +1,23 @@
+{
+  "ui_designer": {
+    "name": "UI Designer (Figma-style)",
+    "description": "Designs app or web UI layouts, optionally with HTML/React code.",
+    "keywords": ["figma", "design", "interface", "layout", "mobile ui", "web ui"],
+    "module": "tools.ui_designer",
+    "active": true
+  },
+  "code_editor": {
+    "name": "Smart Code Editor (Cursor-style)",
+    "description": "Edits, explains, or refactors code files using AI.",
+    "keywords": ["cursor", "edit code", "refactor", "error handling", "debug"],
+    "module": "tools.code_editor",
+    "active": true
+  },
+  "presentation_creator": {
+    "name": "Slide Deck Generator",
+    "description": "Creates presentations from topics or outlines.",
+    "keywords": ["slides", "presentation", "ppt", "deck"],
+    "module": "tools.presentation_creator",
+    "active": true
+  }
+}
