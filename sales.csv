@@ -1,0 +1,11 @@
+Product,Category,Sales,Region
+Laptop,Electronics,1200,North
+Phone,Electronics,800,South
+Tablet,Electronics,600,East
+Desk,Furniture,300,North
+Chair,Furniture,150,West
+Phone,Electronics,750,North
+Chair,Furniture,180,East
+Laptop,Electronics,1300,South
+Monitor,Electronics,400,West
+Desk,Furniture,250,East

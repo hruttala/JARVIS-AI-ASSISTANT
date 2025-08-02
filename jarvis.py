@@ -322,5 +322,15 @@ def main():
             chime(); speak("Shutting down. Goodbye."); break
         split_and_handle(command)
 
+from intent_router import route_intent
+
 if __name__ == "__main__":
-    main()
+    # TEMP: Phase 7 tool emulation test
+    response = route_intent("Analyze this CSV and show the best performing category")
+    print(response)
+
+    # Run Jarvis loop normally after testing
+    # main()
+
+#if __name__ == "__main__":
+    #main()

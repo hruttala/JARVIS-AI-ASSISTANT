@@ -116,6 +116,9 @@ def edit_code_file(filepath, instruction):
     except Exception as e:
         speak(f"Error editing file: {e}")
 
+def get_active_file_path():
+    return "D:/Jarvis/sales.csv"        
+
 # ========== Voice-Driven Project Creation ==========
 def start_project_conversation():
     memory = load_memory()
