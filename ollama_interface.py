@@ -1,5 +1,3 @@
-# ollama_interface.py
-
 import requests
 
 def ask_ollama(prompt: str) -> str:
@@ -14,7 +12,17 @@ def ask_ollama(prompt: str) -> str:
     try:
         response = requests.post(url, json=data, headers=headers, timeout=120)
         response.raise_for_status()
-        response_json = response.json()
-        return response_json.get("message", {}).get("content", "[No content returned]")
+        res_json = response.json()
+
+        print("Ollama Raw Response JSON:")
+        print(res_json)
+
+        # Handle both formats
+        if "message" in res_json and "content" in res_json["message"]:
+            return res_json["message"]["content"]
+        elif "response" in res_json:
+            return res_json["response"]
+        else:
+            return "[No usable content found in response]"
     except Exception as e:
-        return f"[Ollama HTTP error]: {e}"
+        return f"[Ollama error]: {e}"
