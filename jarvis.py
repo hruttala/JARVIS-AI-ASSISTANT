@@ -1,4 +1,3 @@
-# === FILE: jarvis.py ===
 import os
 import json
 import asyncio
@@ -14,6 +13,7 @@ import re
 import threading
 import queue
 import atexit
+import difflib
 from colorama import Fore, Style
 from project_context import (
     start_project_conversation,
@@ -28,6 +28,7 @@ from project_loader import (
     set_last_file,
     get_project_tree
 )
+from intent_router import route_tool_intent
 
 # ---------------- CONFIG ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,8 +38,8 @@ VOICE = "en-US-GuyNeural"
 OLLAMA_MODEL = "mistral"
 APP_SCAN_INTERVAL_DAYS = 3
 SCAN_DIRS = [
-    r"C:\Program Files",
-    r"C:\Program Files (x86)",
+    r"C:\\Program Files",
+    r"C:\\Program Files (x86)",
     os.path.expanduser("~/Desktop"),
     os.path.expanduser("~/AppData/Roaming/Microsoft/Windows/Start Menu/Programs")
 ]
@@ -53,6 +54,36 @@ def load_memory():
 memory = load_memory()
 user_name = memory.get("user", {}).get("name", "Sir")
 memory.setdefault("goals", [])
+
+# ---------------- GOALS ----------------
+def add_goal(desc, deadline=None):
+    memory["goals"].append({"description": desc, "deadline": deadline, "done": False})
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(memory, f, indent=2)
+    return f"Goal added: {desc}" + (f" (Deadline: {deadline})" if deadline else "")
+
+def list_goals():
+    if not memory["goals"]:
+        return "You have no goals yet."
+    return "\n".join(
+        [f"{i+1}. {'✅' if g['done'] else '❌'} {g['description']} ({g.get('deadline') or 'No deadline'})"
+         for i, g in enumerate(memory["goals"])]
+    )
+
+def mark_goal_done(index):
+    try:
+        memory["goals"][index]["done"] = True
+        with open(MEMORY_FILE, "w") as f:
+            json.dump(memory, f, indent=2)
+        return f"Marked goal {index+1} as complete."
+    except:
+        return "Invalid goal number."
+
+def check_progress():
+    goals = memory["goals"]
+    done = sum(1 for g in goals if g["done"])
+    total = len(goals)
+    return f"You've completed {done} of {total} goals ({(done/total)*100:.1f}%)." if total else "No goals yet."
 
 # ---------------- SHUTDOWN HOOK ----------------
 def shutdown_hook():
@@ -135,36 +166,6 @@ def input_mode():
     speak("Still nothing. Please type your command, sir.")
     return input("> ").strip()
 
-# ---------------- GOALS ----------------
-def add_goal(desc, deadline=None):
-    memory["goals"].append({"description": desc, "deadline": deadline, "done": False})
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(memory, f, indent=2)
-    return f"Goal added: {desc}" + (f" (Deadline: {deadline})" if deadline else "")
-
-def list_goals():
-    if not memory["goals"]:
-        return "You have no goals yet."
-    return "\n".join(
-        [f"{i+1}. {'✅' if g['done'] else '❌'} {g['description']} ({g.get('deadline') or 'No deadline'})"
-         for i, g in enumerate(memory["goals"])]
-    )
-
-def mark_goal_done(index):
-    try:
-        memory["goals"][index]["done"] = True
-        with open(MEMORY_FILE, "w") as f:
-            json.dump(memory, f, indent=2)
-        return f"Marked goal {index+1} as complete."
-    except:
-        return "Invalid goal number."
-
-def check_progress():
-    goals = memory["goals"]
-    done = sum(1 for g in goals if g["done"])
-    total = len(goals)
-    return f"You've completed {done} of {total} goals ({(done/total)*100:.1f}%)." if total else "No goals yet."
-
 # ---------------- APP SCANNING ----------------
 def should_rescan_apps():
     try:
@@ -192,8 +193,6 @@ def update_app_list():
     speak(f"I’ve indexed {len(memory['apps'])} apps.", important=True)
 
 # ---------------- COMMAND HANDLER ----------------
-import difflib
-
 def match_file_by_description(command):
     project = get_active_project()
     if not project:
@@ -209,6 +208,7 @@ def match_file_by_description(command):
     else:
         speak("No matching file.")
         return None
+
 
 def handle_command(command):
     command = command.lower()
@@ -305,6 +305,7 @@ def handle_command(command):
 
     speak(ask_gpt(command))
 
+
 def split_and_handle(command):
     parts = re.split(r"\bthen\b|\band\b", command, flags=re.IGNORECASE)
     for part in parts:
@@ -320,17 +321,29 @@ def main():
         if not command: continue
         if "exit" in command or "shutdown" in command:
             chime(); speak("Shutting down. Goodbye."); break
+        try:
+            intent_prompt = f"""
+You are the Jarvis routing engine. From the following user input, determine which tool to use and return a JSON object with:
+{{ "tool": "tool_name", "params": {{...}} }}
+
+Available tools:
+["poster_generator", "flowchart_builder", "task_automator", "file_generator", "prompt_lab", "api_wrapper_gen", "research_assistant", "ui_designer", "code_editor", "data_analyzer"]
+
+User input:
+{command}
+"""
+            tool_response = ask_gpt(intent_prompt)
+            parsed = json.loads(tool_response)
+            tool = parsed.get("tool")
+            params = parsed.get("params", {})
+            if tool:
+                result = route_tool_intent(tool, params)
+                speak(f"{tool.replace('_', ' ').title()} executed successfully.")
+                print(result)
+                continue
+        except Exception as e:
+            print("[⚠️] Tool routing failed:", e)
         split_and_handle(command)
 
-from intent_router import route_intent
-
 if __name__ == "__main__":
-    # TEMP: Phase 7 tool emulation test
-    response = route_intent("Analyze this CSV and show the best performing category")
-    print(response)
-
-    # Run Jarvis loop normally after testing
-    # main()
-
-#if __name__ == "__main__":
-    #main()
+    main()

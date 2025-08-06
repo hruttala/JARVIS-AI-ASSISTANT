@@ -1,23 +1,93 @@
 {
   "ui_designer": {
-    "name": "UI Designer (Figma-style)",
-    "description": "Designs app or web UI layouts, optionally with HTML/React code.",
-    "keywords": ["figma", "design", "interface", "layout", "mobile ui", "web ui"],
-    "module": "tools.ui_designer",
-    "active": true
+    "description": "Generates HTML, CSS, or React code for UI components from natural language prompts.",
+    "inputs": {
+      "prompt": "Describe the UI component or layout you want",
+      "framework": "html | react | tailwind"
+    },
+    "output": "Formatted UI code snippet"
   },
   "code_editor": {
-    "name": "Smart Code Editor (Cursor-style)",
-    "description": "Edits, explains, or refactors code files using AI.",
-    "keywords": ["cursor", "edit code", "refactor", "error handling", "debug"],
-    "module": "tools.code_editor",
-    "active": true
+    "description": "Reads, edits, and rewrites code files based on user instructions.",
+    "inputs": {
+      "filepath": "Relative or absolute file path",
+      "instruction": "What to change in the file"
+    },
+    "output": "Updated file with changes applied"
   },
-  "presentation_creator": {
-    "name": "Slide Deck Generator",
-    "description": "Creates presentations from topics or outlines.",
-    "keywords": ["slides", "presentation", "ppt", "deck"],
-    "module": "tools.presentation_creator",
-    "active": true
+  "data_analyzer": {
+    "description": "Analyzes CSV or tabular data files and answers questions about the data.",
+    "inputs": {
+      "filepath": "Path to CSV or Excel file",
+      "question": "What you want to know (e.g., summary, trend, anomaly)"
+    },
+    "output": "LLM-generated explanation, table, or chart"
+  },
+  "poster_generator": {
+    "description": "Generates static or animated posters with styled text, logos, QR codes, and AI-generated backgrounds.",
+    "inputs": {
+      "prompt": "Poster content (e.g., 'Now Hiring: Python Dev')",
+      "style": "minimal | neon | corporate | event | party | startup",
+      "layout": "stacked | image-left | image-right | grid",
+      "background": "true to use AI-generated background",
+      "animated": "true for GIF output",
+      "logo": "Path to logo image (in prompt as {logo:path})",
+      "qr": "URL for QR code (in prompt as {qr:url})",
+      "size": "[width, height]",
+      "dpi": "1 = normal, 2 = retina"
+    },
+    "output": "poster.png or poster.gif"
+  },
+  "flowchart_builder": {
+    "description": "Converts logic or code descriptions into flowcharts using Mermaid.js.",
+    "inputs": {
+      "input": "Description, pseudocode, or logic",
+      "render": "true to export SVG",
+      "output": "Filename for output SVG"
+    },
+    "output": "Mermaid code or flowchart.svg"
+  },
+  "task_automator": {
+    "description": "Executes CLI tasks based on natural language instructions and logs results.",
+    "inputs": {
+      "task": "Description like 'Install dependencies and run server'",
+      "log": "true to save output to log file",
+      "log_file": "Optional custom filename"
+    },
+    "output": "List of command results with stdout, stderr, and exit codes"
+  },
+  "file_generator": {
+    "description": "Creates structured files like JSON, YAML, Markdown, .env, or README from text prompts.",
+    "inputs": {
+      "prompt": "What the file should contain",
+      "type": "json | yaml | md | txt | py | env | sh | toml",
+      "filename": "Optional full filename (e.g., config.yaml)"
+    },
+    "output": "Created file with structured content"
+  },
+  "prompt_lab": {
+    "description": "Experiments with prompt variants, compares them, and evaluates which is most effective.",
+    "inputs": {
+      "prompt": "The base prompt to refine",
+      "n": "Number of variants to generate"
+    },
+    "output": "List of variants and evaluation"
+  },
+  "api_wrapper_gen": {
+    "description": "Generates API client wrappers from prompt-based specs or OpenAPI description.",
+    "inputs": {
+      "prompt": "Description of the API wrapper needed",
+      "language": "python | javascript | typescript",
+      "filename": "Optional name for the generated file"
+    },
+    "output": "API wrapper code and saved file"
+  },
+  "research_assistant": {
+    "description": "Answers research questions and summarizes input content using the LLM.",
+    "inputs": {
+      "question": "A factual or technical query",
+      "text": "Text to summarize (used instead of 'question')"
+    },
+    "output": "LLM-generated summary or answer"
   }
 }
