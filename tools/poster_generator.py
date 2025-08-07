@@ -10,6 +10,10 @@ import imageio
 from playwright.async_api import async_playwright
 from ollama_interface import generate_image
 
+def main(task, memory):
+    print(f"[{__name__}] received task: {task}")
+    return f"Output for: {task}"
+
 
 def encode_img(path):
     return base64.b64encode(Path(path).read_bytes()).decode("utf-8")

@@ -14,6 +14,7 @@ import threading
 import queue
 import atexit
 import difflib
+from fusion_interface import start_fusion_task
 from colorama import Fore, Style
 from project_context import (
     start_project_conversation,
@@ -263,6 +264,43 @@ def handle_command(command):
         speak("Here are the matching files:" if files else "No matching files.")
         for f in files: print("-", f)
         return
+    elif any(kw in command for kw in [
+        "start a fusion task",
+        "handle a complex task",
+        "chain tools",
+        "do a multi-step task"
+    ]):
+        speak("What task would you like me to handle?")
+        
+        # Text input fallback (replace with voice capture if needed)
+        user_input = input("🎤 Fusion Task: ")
+
+        # Run the fusion task
+        result = start_fusion_task(user_input)
+
+        speak("Fusion task complete. Here's what I did.")
+        print(result)
+        return
+    elif "show tool memory " in command:
+        from tool_memory import get_all_memory
+        import json
+        memory_dump = json.dumpd(get_all_memory(), indent=2)
+        print("\n Tool Memory Snapshot:")
+        print(memory_dump)
+        speak("I've printed thr current tool memory to the console.")
+        return
+    elif "clear tool memory" in command:
+        from tool_memory import clear_memory
+        clear_memory()
+        speak("Tool memory has been cleared.")
+        return
+    elif "save tool memory" in command:
+        from tool_memory import get_all_memory
+        import json
+        with open("tool_memory.json", "w") as f:
+            json.dump(get_all_memory(), f, indent=2)
+        speak("Tool memory has been saved to tool_memory_snapshot.json.")
+        return
 
     for app, path in memory.get("apps", {}).items():
         if app in command:
@@ -316,12 +354,27 @@ def split_and_handle(command):
 def main():
     update_app_list()
     speak(f"Systems online, {user_name}.")
+
     while True:
         command = input_mode()
-        if not command: continue
+        if not command:
+            continue
+
+        # ✅ Exit handler
         if "exit" in command or "shutdown" in command:
-            chime(); speak("Shutting down. Goodbye."); break
+            chime()
+            speak("Shutting down. Goodbye.")
+            break
+
         try:
+            # ✅ First: handle all known static commands (including fusion)
+            split_and_handle(command)
+            continue  # if handled successfully, don't fall through
+        except Exception as e:
+            print("[❌] Command match failed:", e)
+
+        try:
+            # ✅ Fallback: dynamic tool routing using AI
             intent_prompt = f"""
 You are the Jarvis routing engine. From the following user input, determine which tool to use and return a JSON object with:
 {{ "tool": "tool_name", "params": {{...}} }}
@@ -336,14 +389,16 @@ User input:
             parsed = json.loads(tool_response)
             tool = parsed.get("tool")
             params = parsed.get("params", {})
+
             if tool:
                 result = route_tool_intent(tool, params)
                 speak(f"{tool.replace('_', ' ').title()} executed successfully.")
                 print(result)
                 continue
+
         except Exception as e:
             print("[⚠️] Tool routing failed:", e)
-        split_and_handle(command)
+            speak("Sorry, I couldn’t process that task.")
 
 if __name__ == "__main__":
     main()

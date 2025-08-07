@@ -5,6 +5,10 @@ import pandas as pd
 from ollama_interface import ask_ollama
 from project_context import get_active_file_path
 
+def analyze_data_from_intent(intent: str, data: str = "") -> str:
+    print(f"[Data Analyzer] Analyzing data based on intent: {intent}")
+    return "Analysis result based on intent: " + intent
+
 def handle(user_input, context={}):
     file_path = get_active_file_path()
 
