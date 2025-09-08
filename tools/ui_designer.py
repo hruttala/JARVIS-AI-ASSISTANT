@@ -18,8 +18,11 @@ Design a mobile or web UI layout based on this user request:
 Give a short description first, then output basic HTML (or React JSX) code if possible.
 Avoid CSS unless necessary.
 """
-    
-    from ollama_interface import ask_ollama  # You should have this as your Ollama wrapper
+    from ollama_interface import ask_ollama  # Ollama wrapper should exist
     response = ask_ollama(prompt)
-    
     return response
+
+# ✅ Toolchain Compatibility: Add run() for executor
+def run(description):
+    print(f"[UI Designer] Running from toolchain_executor: {description}")
+    return handle(description)

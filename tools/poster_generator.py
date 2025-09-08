@@ -171,3 +171,14 @@ def generate_poster_from_intent(params: dict):
         size=params.get("size", (1080, 1080)),
         dpi=params.get("dpi", 1),
     )
+def run(description):
+    print(f"[Poster Generator] Running from toolchain_executor: {description}")
+    create_poster(
+        prompt=description,
+        style="startup",
+        layout="stacked",
+        output_path="poster.png",
+        background=False,
+        animated=False
+    )
+    return "Poster created: poster.png"

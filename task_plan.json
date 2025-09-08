@@ -1,0 +1,17 @@
+[
+  {
+    "tool": "ui_designer",
+    "action": "design UI",
+    "description": "Create a layout for the landing page"
+  },
+  {
+    "tool": "content_writer",
+    "action": "write content",
+    "description": "Generate heading, subheading, and CTA text"
+  },
+  {
+    "tool": "poster_generator",
+    "action": "generate image",
+    "description": "Make hero banner image for the page"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "summary": [
+    {
+      "step": 1,
+      "tool": "content_writer",
+      "status": "\u2705 Success",
+      "description": "Generate heading, subheading, and CTA text",
+      "output_excerpt": "Here's a potential option:\n\n**Headline:** UNLEASH YOUR FEARLESS SPIRIT\n\n**Subheading:** Take the leap and join our community of innovators, creatives, and game-changers\n\n**Body Copy:**\n\nReady to turn "
+    }
+  ],
+  "suggestions": [
+    "No issues detected. Execution looks solid."
+  ],
+  "revised_plan": []
+}
